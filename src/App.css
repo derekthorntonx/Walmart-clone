@@ -111,6 +111,12 @@ input[type=number] {
   cursor: pointer;
 }
 
+.add-to-cart-button:disabled, .add-to-cart-button:disabled:hover {
+  cursor:not-allowed;
+  background-color: gray;
+  border-color: gray;
+}
+
 .add-to-cart-button:hover {
   background-color: #041e42;
   border-color: #041e42;

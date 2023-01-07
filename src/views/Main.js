@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCartShopping, faMagnifyingGlass, faPlus, faMinus, faStar } from '@fortawesome/free-solid-svg-icons';
 import Logo from '../assets/logo.png';
 import Product from '../components/Product';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 
 
@@ -14,11 +14,46 @@ function Main() {
     const [harddriveShow, setHarddriveShow] = useState(false);
     const [ratingFilter, setRatingFilter] = useState(false);
     const [brandFilter, setBrandFilter] = useState([]);
-    const [priceFilter, setPriceFilter] = useState([]);
+    const [priceFilter, setPriceFilter] = useState(false);
     const [memoryFilter, setMemoryFilter] = useState([]);
     const [harddriveFilter, setHarddriveFilter] = useState(false);
-    const [minPrice, setMinPrice] = useState(false);
-    const [maxPrice, setMaxPrice] = useState(false);
+    const [minPrice, setMinPrice] = useState('');
+    const [maxPrice, setMaxPrice] = useState('');
+    const [inventory, setInventory] = useState([]);
+
+    let test = [{
+        name: 'test1',
+        rating: '5',
+        brand: 'msi',
+        memory: '4',
+        harddrive: 'ssd',
+        price: '10'
+        },
+        {
+        name: 'test2',
+        rating: '1',
+        brand: 'asus',
+        memory: '8',
+        harddrive: 'ssd',
+        price: '100'
+        },
+        {
+        name: 'test3',
+        rating: '3',
+        brand: 'acer',
+        memory: '16',
+        harddrive: 'hdd',
+        price: '6969'
+        },
+        {
+        name: 'test4',
+        rating: '2',
+        brand: 'hp',
+        memory: '32',
+        harddrive: 'hdd',
+        price: '2000'
+        },
+    ]
 
     function handleBrandSelection(e) {
         if (e.target.checked){
@@ -31,11 +66,6 @@ function Main() {
 
     function handlePriceRange(e) {
         e.preventDefault();
-        if (minPrice > maxPrice){
-            alert('Minimum price cannot be higher than maximum.')
-            setMaxPrice(false);
-            return;
-        }
         setPriceFilter([minPrice, maxPrice]);
     }
 
@@ -47,6 +77,57 @@ function Main() {
             setMemoryFilter(memoryFilter.filter(a => a !== `${e.target.value}`))
         }
     }
+
+    // filter functions
+
+    function filterRating(arr) {
+        if (!ratingFilter){
+            return arr;
+        }
+        return arr.filter((item) => item.rating >= ratingFilter)
+    }
+
+    function filterBrand(arr) {
+        return arr.filter((item) => item.brand.includes(brandFilter));
+    }
+
+    function filterMemory(arr) {
+        return arr.filter((item) => item.memory.includes(memoryFilter));
+    }
+
+    function filterHarddrive(arr) {
+        if (!harddriveFilter) {
+            return arr;
+        }
+        return arr.filter((item) => item.harddrive.includes(harddriveFilter));
+    }
+
+    function filterPrice(arr) {
+        if (!priceFilter){
+            return arr;
+        }
+        if ((priceFilter[0] === '') && (priceFilter[1] === '')){
+            return arr;
+        }
+        if (priceFilter[0] === ''){
+            return arr.filter((item) => parseInt(item.price) <= parseInt(priceFilter[1]))}
+        if (priceFilter[1] === ''){
+            return arr.filter((item) => parseInt(item.price) >= parseInt(priceFilter[0]))
+        }
+        return arr.filter((item) => parseInt(item.price) >= parseInt(priceFilter[0]) && parseInt(item.price) <= parseInt(priceFilter[1]))
+    }
+
+    useEffect(() => {
+        let result = test;
+        result = filterRating(result);
+        result = filterBrand(result);
+        result = filterMemory(result);
+        result = filterHarddrive(result);
+        result = filterPrice(result);
+
+        setInventory(result);
+       console.log(result)
+    }, [ratingFilter, brandFilter, memoryFilter, harddriveFilter, priceFilter]);
 
   return (
     <div className="App">
@@ -100,7 +181,7 @@ function Main() {
                     <div onClick={() => setBrandShow(!brandShow)} style={{display: 'flex', justifyContent: 'space-between', paddingRight: '10%'}}><h4>Brand</h4><span style={{color: '#007dc6'}}><FontAwesomeIcon icon={brandShow ? faMinus : faPlus}/></span></div>
                         {brandShow ? <form className='filter-form' onChange={handleBrandSelection}>
                             <div>
-                                <input type='checkbox' id='MSI' name='msi' value='MSI'/>
+                                <input type='checkbox' id='MSI' name='msi' value='msi'/>
                                 <label style={{marginLeft: '2.5%'}} htmlFor='MSI'>MSI</label>
                             </div>
                             <div>
@@ -123,7 +204,7 @@ function Main() {
                         {priceShow ? <form className='filter-form'>
                             <input type='number' placeholder='Min' value={minPrice} onChange={(e) => setMinPrice(e.target.value)}/>
                             <input type='number' placeholder='Max' value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)}/>
-                            <button onClick={handlePriceRange} style={{width: '50%', marginTop: '5%', marginLeft: '25%'}} className='add-to-cart-button'>Apply</button>
+                            <button onClick={handlePriceRange} disabled={minPrice > maxPrice && maxPrice != ''} style={{width: '50%', marginTop: '5%', marginLeft: '25%'}} className='add-to-cart-button'>Apply</button>
                         </form> : null}
                     </li>
 
@@ -166,13 +247,6 @@ function Main() {
             </div>
 
             <div className='product-grid'>
-                <Product />
-                <Product />
-                <Product />
-                <Product />
-                <Product />
-                <Product />
-                <Product />
                 <Product />
             </div>
         </div>
