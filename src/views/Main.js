@@ -124,7 +124,6 @@ function Main() {
         result = filterPrice(result);
         result = filterSearch(result)
         setStock(result);
-        console.log(result)
     }, [ratingFilter, brandFilter, memoryFilter, harddriveFilter, priceFilter, searchFilter]);
 
   return (
@@ -248,7 +247,6 @@ function Main() {
 
             <div className='product-grid'>
                 {stock.map((product, index) => <Product key={index} product={product}/> )}
-                
             </div>
         </div>
     </div>
