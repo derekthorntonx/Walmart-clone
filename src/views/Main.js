@@ -3,8 +3,7 @@ import { faCartShopping, faMagnifyingGlass, faPlus, faMinus, faStar } from '@for
 import Logo from '../assets/logo.png';
 import Product from '../components/Product';
 import { useEffect, useState } from 'react';
-
-
+import { inventory } from '../ProductList';
 
 function Main() {
     const [ratingShow, setRatingShow] = useState(false);
@@ -19,41 +18,26 @@ function Main() {
     const [harddriveFilter, setHarddriveFilter] = useState(false);
     const [minPrice, setMinPrice] = useState('');
     const [maxPrice, setMaxPrice] = useState('');
-    const [inventory, setInventory] = useState([]);
+    const [stock, setStock] = useState([]);
+    const [searchInput, setSearchInput] = useState('');
+    const [searchFilter, setSearchFilter] = useState('');
 
-    let test = [{
-        name: 'test1',
-        rating: '5',
-        brand: 'msi',
-        memory: '4',
-        harddrive: 'ssd',
-        price: '10'
-        },
-        {
-        name: 'test2',
-        rating: '1',
-        brand: 'asus',
-        memory: '8',
-        harddrive: 'ssd',
-        price: '100'
-        },
-        {
-        name: 'test3',
-        rating: '3',
-        brand: 'acer',
-        memory: '16',
-        harddrive: 'hdd',
-        price: '6969'
-        },
-        {
-        name: 'test4',
-        rating: '2',
-        brand: 'hp',
-        memory: '32',
-        harddrive: 'hdd',
-        price: '2000'
-        },
-    ]
+    function handleClearFilters() {
+      setRatingShow(false);
+      setBrandShow(false); 
+      setPriceShow(false);
+      setMemoryShow(false); 
+      setHarddriveShow(false);
+      setRatingFilter(false);
+      setBrandFilter([]);
+      setPriceFilter(false);
+      setMemoryFilter([]);
+      setHarddriveFilter(false);
+      setMinPrice('');
+      setMaxPrice('');
+      setSearchInput('');
+      setSearchFilter('');
+    }
 
     function handleBrandSelection(e) {
         if (e.target.checked){
@@ -88,11 +72,17 @@ function Main() {
     }
 
     function filterBrand(arr) {
-        return arr.filter((item) => item.brand.includes(brandFilter));
+        if (brandFilter.length === 0){
+            return arr
+        }
+        return arr.filter((item) => brandFilter.some(brand => item.brand.includes(brand)))
     }
 
     function filterMemory(arr) {
-        return arr.filter((item) => item.memory.includes(memoryFilter));
+        if (memoryFilter.length === 0){
+            return arr
+        }
+        return arr.filter((item) => memoryFilter.some(memory => item.memory.includes(memory)))
     }
 
     function filterHarddrive(arr) {
@@ -117,17 +107,25 @@ function Main() {
         return arr.filter((item) => parseInt(item.price) >= parseInt(priceFilter[0]) && parseInt(item.price) <= parseInt(priceFilter[1]))
     }
 
+    function filterSearch(arr) {
+        if(searchFilter === ''){
+        return arr;
+        }
+
+        return arr.filter(obj => Object.values(obj).some(val => val.includes(searchFilter)));
+    }
+
     useEffect(() => {
-        let result = test;
+        let result = inventory;
         result = filterRating(result);
         result = filterBrand(result);
         result = filterMemory(result);
         result = filterHarddrive(result);
         result = filterPrice(result);
-
-        setInventory(result);
-       console.log(result)
-    }, [ratingFilter, brandFilter, memoryFilter, harddriveFilter, priceFilter]);
+        result = filterSearch(result)
+        setStock(result);
+        console.log(result)
+    }, [ratingFilter, brandFilter, memoryFilter, harddriveFilter, priceFilter, searchFilter]);
 
   return (
     <div className="App">
@@ -137,17 +135,18 @@ function Main() {
 
             
           <div className='search-bar'>
-            <input type='text' placeholder='What are you looking for?'/>
-            <button><span style={{color: 'white'}}><FontAwesomeIcon className='fa-xl' icon={faMagnifyingGlass}/></span></button>
+            <input type='text' placeholder='What are you looking for?' value={searchInput} onChange={(e) => setSearchInput(e.target.value)}/>
+            <button onClick={() => setSearchFilter(searchInput)}><span style={{color: 'white'}}><FontAwesomeIcon className='fa-xl' icon={faMagnifyingGlass}/></span></button>
           </div>
 
           <div className='shopping-cart-logo'>
            <span style={{color: '#007dc6'}}><FontAwesomeIcon className='fa-xl' icon={faCartShopping}/></span>
            </div>
-           <div className='divider'></div>
+           <div className='divider'>
+           <h1 style={{color: '#333333', maxHeight: '125px', position: 'absolute', bottom: '-100%', left: '2.5%'}}>Gaming laptop</h1>
+           </div>
         </header>
         <div className='main-container'>
-            <h1 style={{color: '#333333', maxHeight: '125px'}}>Gaming laptop</h1>
 
             <div className='filter-menu'>
                 <ul>
@@ -204,7 +203,7 @@ function Main() {
                         {priceShow ? <form className='filter-form'>
                             <input type='number' placeholder='Min' value={minPrice} onChange={(e) => setMinPrice(e.target.value)}/>
                             <input type='number' placeholder='Max' value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)}/>
-                            <button onClick={handlePriceRange} disabled={minPrice > maxPrice && maxPrice != ''} style={{width: '50%', marginTop: '5%', marginLeft: '25%'}} className='add-to-cart-button'>Apply</button>
+                            <button onClick={handlePriceRange} disabled={minPrice > maxPrice && maxPrice !== ''} style={{width: '50%', marginTop: '5%', marginLeft: '25%'}} className='add-to-cart-button'>Apply</button>
                         </form> : null}
                     </li>
 
@@ -244,10 +243,12 @@ function Main() {
                         </form> : null}
                     </li>
                 </ul>
+                <button onClick={handleClearFilters} style={{marginTop: '10%', marginLeft: '25%'}} className='add-to-cart-button'>Clear Filters</button>
             </div>
 
             <div className='product-grid'>
-                <Product />
+                {stock.map((product, index) => <Product key={index} product={product}/> )}
+                
             </div>
         </div>
     </div>
