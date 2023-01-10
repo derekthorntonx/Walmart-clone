@@ -4,6 +4,8 @@ import Logo from '../assets/logo.png';
 import Product from '../components/Product';
 import { useEffect, useState } from 'react';
 import { inventory } from '../ProductList';
+import { CartState } from '../context/Context';
+import { Link } from 'react-router-dom';
 
 function Main() {
     const [ratingShow, setRatingShow] = useState(false);
@@ -21,6 +23,9 @@ function Main() {
     const [stock, setStock] = useState([]);
     const [searchInput, setSearchInput] = useState('');
     const [searchFilter, setSearchFilter] = useState('');
+
+    const { state: {cart} } = CartState();
+    console.log(cart)
 
     function handleClearFilters() {
       setRatingShow(false);
@@ -139,7 +144,9 @@ function Main() {
           </div>
 
           <div className='shopping-cart-logo'>
-           <span style={{color: '#007dc6'}}><FontAwesomeIcon className='fa-xl' icon={faCartShopping}/></span>
+           <span style={{color: '#007dc6', position: 'relative'}}><Link to='/checkout'><FontAwesomeIcon className='fa-xl' icon={faCartShopping}/></Link>
+           {cart.length > 0 ? <div className='cart-notification'>{cart.length}</div> : null}
+           </span>
            </div>
            <div className='divider'>
            <h1 style={{color: '#333333', maxHeight: '125px', position: 'absolute', bottom: '-100%', left: '2.5%'}}>Gaming laptop</h1>

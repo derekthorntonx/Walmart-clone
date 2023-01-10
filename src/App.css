@@ -60,6 +60,24 @@
   height: 100vh;
 }
 
+.shopping-cart-logo a:visited {
+ color: #007dc6;
+}
+
+.cart-notification {
+  position: absolute;
+  top: -10px;
+  height: 17px;
+  width: 17px;
+  border-radius: 100%;
+  background: red;
+  right: -10px;
+  font-size: 0.8rem;
+  font-weight: 900;
+  text-align: center;
+  color: white;
+}
+
 .product-details {
   position: absolute;
   top: 0;
