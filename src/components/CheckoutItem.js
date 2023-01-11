@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashCan } from '@fortawesome/free-solid-svg-icons';
 
 function CheckoutItem( {product} ) {
-    const { state: {cart}, dispatch } = CartState();
+    const { dispatch } = CartState();
 
     return(
         <div className="checkout-item">
