@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "/Walmart-clone/static/css/main.8c80d3e2.css",
+    "main.js": "/Walmart-clone/static/js/main.c8000652.js",
+    "static/media/logo.png": "/Walmart-clone/static/media/logo.f675fc5f187bfa6a48be.png",
+    "index.html": "/Walmart-clone/index.html",
+    "main.8c80d3e2.css.map": "/Walmart-clone/static/css/main.8c80d3e2.css.map",
+    "main.c8000652.js.map": "/Walmart-clone/static/js/main.c8000652.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.8c80d3e2.css",
+    "static/js/main.c8000652.js"
+  ]
+}
